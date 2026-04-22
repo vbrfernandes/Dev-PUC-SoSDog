@@ -13,6 +13,8 @@ namespace Dev_PUC_SoSDog
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
             // =======================================================
             // CONFIGURAÇÃO DO BANCO DE DADOS (ENTITY FRAMEWORK CORE)
             // =======================================================
