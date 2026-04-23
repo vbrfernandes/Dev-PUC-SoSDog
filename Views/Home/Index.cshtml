@@ -1,1 +1,78 @@
-﻿
+﻿@model IEnumerable<SosDog.Models.Ocorrencia>
+@{
+    ViewData["Title"] = "Dashboard de Ocorrências";
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<main class="dashboard-container">
+    <aside class="left-sidebar">
+        <div class="cases-list">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <div class="case-card" data-id="@item.ID_Ocorrencia">
+                        @* A classe 'dog-api-img' ativa o script dog-api-handler.js *@
+                        <img src="~/img/placeholder-dog.png" class="dog-api-img" alt="Foto do Animal">
+                        
+                        <div class="case-details">
+                            <div class="case-header">
+                                <span>ID: #@item.ID_Ocorrencia</span>
+                                <span class="badge badge-green">@item.Status</span>
+                            </div>
+                            
+                            @* Ajustado para usar as propriedades REAIS do seu Model Ocorrencia *@
+                            <p><strong>Tipo:</strong> @item.Tipo</p>
+                            <p class="text-truncate" title="@item.Descricao">
+                                <strong>Desc:</strong> @item.Descricao
+                            </p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    <i class="fa-solid fa-dog fa-2x mb-2"></i>
+                    <p>Nenhuma ocorrência encontrada no sistema.</p>
+                </div>
+            }
+        </div>
+
+        <div class="sidebar-buttons">
+            <button class="btn-orange" onclick="alert('Página de Urgência em desenvolvimento!')">
+                Urgente <i class="fa-solid fa-user-clock"></i>
+            </button>
+            @* Link ajustado para a rota correta do Controller de Ocorrências *@
+            <a asp-controller="Ocorrencias" asp-action="Create" class="btn-orange text-decoration-none">
+                Reportar <i class="fa-solid fa-pen-to-square"></i>
+            </a>
+        </div>
+    </aside>
+
+    <section class="main-map-area">
+        <div id="map"></div>
+    </section>
+
+    <aside class="dog-profile-sidebar">
+        <div class="profile-header">
+            <h2>perfil do cão</h2>
+            <i class="fa-solid fa-pen edit-icon"></i>
+        </div>
+        <hr class="profile-divider">
+        <div class="profile-img-wrap">
+            <img src="~/img/placeholder-dog.png" alt="Cão Selecionado">
+        </div>
+        <div class="status-box">
+            <div class="status-col"><p>Status: Ativo</p></div>
+            <div class="status-col"><p>Local: Centro</p></div>
+        </div>
+    </aside>
+</main>
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="~/js/map-handler.js" asp-append-version="true"></script>
+    <script src="~/js/dog-api-handler.js" asp-append-version="true"></script>
+}
