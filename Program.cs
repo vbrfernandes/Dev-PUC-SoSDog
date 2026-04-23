@@ -2,6 +2,9 @@ using Dev_PUC_SoSDog.Models; // Importante para achar o AppDbContext
 using Microsoft.EntityFrameworkCore;
 using SosDog.Models; // Importante para o UseSqlServer
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
+
 namespace Dev_PUC_SoSDog
 {
     public class Program
@@ -21,6 +24,14 @@ namespace Dev_PUC_SoSDog
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Home/Index"; // Onde o usuário é redirecionado se não estiver logado
+                    options.AccessDeniedPath = "/Home/Index";
+                    options.Cookie.Name = "SoSDogAuth"; // Nome do cookie
+                });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -33,6 +44,7 @@ namespace Dev_PUC_SoSDog
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
