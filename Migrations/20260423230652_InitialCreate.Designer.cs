@@ -12,7 +12,7 @@ using SosDog.Models;
 namespace Dev_PUC_SoSDog.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260420000952_InitialCreate")]
+    [Migration("20260423230652_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -128,20 +128,11 @@ namespace Dev_PUC_SoSDog.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID_Usuario"));
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Data_Cadastro")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Foto_Perfil")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LocalizacaoAtual")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nome")
@@ -153,8 +144,8 @@ namespace Dev_PUC_SoSDog.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Telefone")
-                        .HasColumnType("int");
+                    b.Property<string>("Telefone")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID_Usuario");
 

@@ -13,40 +13,28 @@ namespace SosDog.Models
         [StringLength(100)]
         public string Nome { get; set; }
 
-        [Required, EmailAddress]
+        [Required(ErrorMessage = "O e-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "Formato de e-mail inválido.")]
         public string Email { get; set; }
 
-        [Required, DataType(DataType.Password)]
+        [Required(ErrorMessage = "A senha é obrigatória.")]
+        [DataType(DataType.Password)]
         public string Senha { get; set; }
 
-        public string? Foto_Perfil { get; set; }
+        [Required(ErrorMessage = "A foto de perfil é obrigatória.")]
+        public string Foto_Perfil { get; set; }
 
-        public DateTime Data_Cadastro { get; set; } = DateTime.Now;
+        [Required(ErrorMessage = "O telefone é obrigatório.")]
+        [Phone(ErrorMessage = "Formato de telefone inválido.")]
+        public string Telefone { get; set; }
 
-        // Atributos do Diagrama de Classes
-        public string? LocalizacaoAtual { get; set; }
-        public string? Bio { get; set; }
-
-        // Atributo Privado (Apenas acessível dentro desta classe)
-        private int? _telefone;
-
-        // Propriedade pública para acessar o telefone com segurança, se necessário
-        public int? Telefone
-        {
-            get { return _telefone; }
-            set { _telefone = value; }
-        }
+        // NOVOS CAMPOS PARA O RESET DE SENHA
+        public string? ResetToken { get; set; }
+        public DateTime? ResetTokenExpiracao { get; set; }
 
         // Relacionamentos (Navegação)
         public virtual ICollection<Ocorrencia> OcorrenciasRegistradas { get; set; } = new List<Ocorrencia>();
         public virtual ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>();
         public virtual ICollection<Favorito> Favoritos { get; set; } = new List<Favorito>();
-
-        // Métodos do Diagrama de Classes (Assinaturas)
-        public void CadastrarConta() { /* Lógica aqui */ }
-        public void EditarPerfil() { /* Lógica aqui */ }
-        public void ExcluirConta() { /* Lógica aqui */ }
-        public void RedefinirSenha() { /* Lógica aqui */ }
-        public void Logout() { /* Lógica aqui */ }
     }
 }

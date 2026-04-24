@@ -27,7 +27,8 @@ namespace SosDog.Models
         [Required]
         public float Longitude { get; set; }
 
-        public DateTime Data_Registro { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime Data_Registro { get; set; } = DateTime.UtcNow;
 
         // Chave Estrangeira - Registra (1:N)
         [Required]
@@ -40,8 +41,5 @@ namespace SosDog.Models
         public virtual ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>();
         public virtual ICollection<Favorito> FavoritadosPor { get; set; } = new List<Favorito>();
 
-        // Métodos do Diagrama de Classes (Assinaturas)
-        public void AtualizarStatus() { /* Lógica aqui */ }
-        public void RegistrarCuidados() { /* Lógica aqui */ }
     }
 }

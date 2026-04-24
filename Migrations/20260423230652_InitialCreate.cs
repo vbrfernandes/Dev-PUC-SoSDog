@@ -21,10 +21,7 @@ namespace Dev_PUC_SoSDog.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Senha = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Foto_Perfil = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Data_Cadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LocalizacaoAtual = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Telefone = table.Column<int>(type: "int", nullable: true)
+                    Telefone = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

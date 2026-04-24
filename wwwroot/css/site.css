@@ -450,3 +450,65 @@ body {
     border: 3px solid var(--white);
     margin-bottom: 15px;
 }
+
+/* ==================== CLASSES DO MODAL E HEADER ==================== */
+
+/* Remove fundo e borda dos botões de navegação */
+.nav-btn-transparent {
+    background-color: transparent;
+    border: none;
+}
+
+/* Container do usuário logado no header */
+.user-menu-logged {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--white);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+    .user-info span {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+/* Estilos específicos do Modal de Login */
+.custom-modal-radius {
+    border-radius: var(--border-radius-lg);
+}
+
+.modal-icon-color {
+    color: var(--primary-green);
+}
+
+.modal-title-custom {
+    color: var(--primary-green);
+    font-weight: bold;
+}
+
+.btn-login-submit {
+    background-color: var(--primary-orange);
+    border: none;
+}
+
+    .btn-login-submit:hover {
+        background-color: #d16b50; /* Um tom ligeiramente mais escuro para o hover */
+        color: var(--white);
+    }
+
+.modal-link-cadastro {
+    color: var(--primary-orange);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+    .modal-link-cadastro:hover {
+        color: var(--primary-green);
+        text-decoration: underline;
+    }
