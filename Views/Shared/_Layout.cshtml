@@ -63,9 +63,16 @@
         </div>
     </header>
 
+
     <main>
         @RenderBody()
     </main>
+
+    <footer class="footer">
+        <div class="container text-center">
+            &copy; 2026 - Dev_PUC_SoSDog - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
 
     <partial name="~/Views/Usuarios/_LoginModal.cshtml" />
     <partial name="~/Views/Usuarios/_RegistroModal.cshtml" model="new SosDog.Models.Usuario()" />

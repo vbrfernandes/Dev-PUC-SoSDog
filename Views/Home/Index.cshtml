@@ -22,16 +22,17 @@
                          data-idade="@item.Faixa_Etaria"
                          data-usuario="@item.ID_Usuario"
                          data-alimentacao="@(item.Data_Ultima_Alimentacao.HasValue ? item.Data_Ultima_Alimentacao.Value.ToString("dd/MM/yyyy HH:mm") : "Sem registro")">
-                        
+                    
                         <img src="@(!string.IsNullOrEmpty(item.Foto_Animal) ? item.Foto_Animal : "/img/placeholder-dog.png")" class="dog-api-img" alt="Foto do Animal">
-                        
+                    
                         <div class="case-details">
                             <div class="case-header">
-                                <span>ID: @item.Codigo_Cachorro</span>
+                                <span>Id: @item.Codigo_Cachorro</span>
+                                <span class="badge badge-green">Saudável</span>
                             </div>
                             <p><strong>Tipo:</strong> @item.Tipo</p>
                             <p class="text-truncate" title="@item.Descricao">
-                                <strong>Desc:</strong> @item.Descricao
+                                <strong>Status:</strong> @item.Sociabilidade - @item.Porte - @item.Sexo
                             </p>
                         </div>
                     </div>
@@ -50,17 +51,17 @@
             <button class="btn-orange" onclick="alert('Página de Urgência em desenvolvimento!')">
                 Urgente <i class="fa-solid fa-user-clock"></i>
             </button>
-            
+        
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 <button type="button" class="btn-orange" data-bs-toggle="modal" data-bs-target="#modalOcorrencia">
-                    Reportar <i class="fa-solid fa-pen-to-square"></i>
+                    Reportar Animal <i class="fa-solid fa-pen-to-square"></i>
                 </button>
             }
             else
             {
                 <button type="button" class="btn-orange" data-bs-toggle="modal" data-bs-target="#loginModal">
-                    Reportar <i class="fa-solid fa-pen-to-square"></i>
+                    Reportar Animal <i class="fa-solid fa-pen-to-square"></i>
                 </button>
             }
         </div>
