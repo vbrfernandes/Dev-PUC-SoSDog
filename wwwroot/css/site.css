@@ -1,136 +1,4 @@
-/*:root {
-    --bg-main: #eff2f1;
-    --primary-green: #385b54;
-    --light-green: #a2c1a3;
-    --primary-orange: #e07a5f;
-    --white: #ffffff;
-    --text-dark: #333;
-}*/
 
-/* RESET */
-/** {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-body {
-    background-color: var(--bg-main);
-}*/
-
-
-/* SEARCH */
-/*.search-bar {
-    background: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-}
-
-    .search-bar input {
-        border: none;
-        outline: none;
-    }*/
-
-/* LAYOUT */
-/*.dashboard-container {
-    display: flex;
-    padding: 20px;
-    gap: 20px;
-}*/
-
-/* SIDEBAR */
-/*.left-sidebar {
-    width: 300px;
-}
-
-.case-card {
-    display: flex;
-    gap: 10px;
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-    .case-card img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-    }*/
-
-/* FEED */
-/*.main-content {
-    flex: 1;
-}
-
-.feed-card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    max-width: 300px;
-}
-
-.feed-img {
-    width: 100%;
-    border-radius: 10px;
-}
-
-.tags {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-}
-
-.tag {
-    background: var(--light-green);
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 12px;
-}*/
-
-/* BOTÕES */
-/*.btn-orange {
-    background: var(--primary-orange);
-    color: white;
-    border: none;
-    padding: 10px;
-    margin-top: 10px;
-    width: 100%;
-    border-radius: 8px;
-    cursor: pointer;
-}*/
-/*html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
-}*/
 
 :root {
     --bg-main: #eff2f1;
@@ -146,6 +14,8 @@ body {
     --border-radius-lg: 15px;
     --border-main: 2px solid var(--primary-green);
 }
+
+
 
 /* ==================== RESET E TIPOGRAFIA ==================== */
 * {
@@ -511,4 +381,221 @@ body {
     .modal-link-cadastro:hover {
         color: var(--primary-green);
         text-decoration: underline;
+    }
+
+/* ==================== ESTRUTURA BASE DA SIDEBAR ==================== */
+.right-sidebar {
+    background: #d3dbd8;
+    padding: 15px;
+    position: relative;
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-radius: 15px;
+}
+
+    .right-sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .right-sidebar::-webkit-scrollbar-thumb {
+        background: var(--border-color); /* Caso não tenha definido na raiz, substitua por uma cor fixa como #ccc */
+        border-radius: 10px;
+    }
+
+.dog-profile-sidebar {
+    background-color: var(--bg-sidebar-right);
+    padding: 20px;
+    border-radius: var(--border-radius-lg);
+    gap: 12px;
+}
+
+/* ==================== FOTO DE PERFIL E CABEÇALHO ==================== */
+.profile-img-wrap img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    border: 3px solid var(--white);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .profile-header h2 {
+        font-size: 20px;
+        color: var(--primary-green);
+        font-weight: 800;
+    }
+
+.edit-icon {
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.profile-divider {
+    border: none;
+    border-top: 1px solid #a3b0ac;
+    margin: 2px 0;
+}
+/* ==================== SEÇÕES (STATUS E AÇÕES) ==================== */
+.section-title {
+    font-size: 13px;
+    color: var(--text-dark);
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.status-box {
+    background-color: #e4e9e7;
+    border-radius: var(--border-radius-md);
+    padding: 10px 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.status-col p {
+    font-size: 11px;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.actions-labels {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 20px;
+}
+
+.actions-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* ==================== BOTÕES CIRCULARES ==================== */
+.btn-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    color: var(--white);
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+    transition: 0.2s;
+}
+
+    .btn-circle:hover {
+        transform: scale(1.05);
+    }
+
+.btn-agua {
+    background-color: #7ab583;
+}
+
+.btn-comida {
+    background-color: var(--primary-orange);
+}
+
+/* ==================== LOG DE USUÁRIO ==================== */
+.user-log-box {
+    background-color: #c1ccc8;
+    border-radius: var(--border-radius-md);
+    padding: 10px;
+    font-size: 10px;
+    color: var(--text-dark);
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* ==================== SEÇÃO DE COMENTÁRIOS ==================== */
+.comments-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comment-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar-sm {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comment-input {
+    flex-grow: 1;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 11px;
+    outline: none;
+}
+
+.btn-send-comment {
+    background-color: var(--light-green);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+    .btn-send-comment i {
+        font-size: 14px;
+        margin-left: -2px;
+    }
+
+    .btn-send-comment:hover {
+        background-color: var(--primary-green);
+        transform: scale(1.1);
+    }
+
+    .btn-send-comment:active {
+        transform: scale(0.95);
+    }
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comment-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .comment-item p {
+        font-size: 11px;
+        color: var(--text-dark);
+        line-height: 1.3;
     }

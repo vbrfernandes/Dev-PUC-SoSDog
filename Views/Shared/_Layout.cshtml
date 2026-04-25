@@ -71,6 +71,7 @@
     <partial name="~/Views/Usuarios/_RegistroModal.cshtml" model="new SosDog.Models.Usuario()" />
     <partial name="~/Views/Usuarios/_EsqueciSenhaModal.cshtml" />
     <partial name="~/Views/Usuarios/_RedefinirSenhaModais.cshtml" />
+    <partial name="~/Views/Ocorrencias/_CriarOcorrenciaModal.cshtml" model="new SosDog.Models.Ocorrencia()" />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -78,6 +79,7 @@
     
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/usuario.js" asp-append-version="true"></script>
+    <script src="~/js/ocorrencias.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

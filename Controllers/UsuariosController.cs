@@ -36,11 +36,12 @@ namespace Dev_PUC_SoSDog.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string senha)
         {
-            // Busca o usuário no banco (Atenção: Futuramente implementaremos Hash de senha aqui)
+            // 1. Busca o usuário no banco APENAS pelo E-mail
             var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(u => u.Email == email && u.Senha == senha);
+                .FirstOrDefaultAsync(u => u.Email == email);
 
-            // 2. Verifica se achou o usuário E se a senha bate com o Hash salvo
+            // 2. Verifica se achou o usuário (se não achou, é null) 
+            // E depois verifica se a senha pura bate com o Hash salvo no banco
             if (usuario == null || !BCrypt.Net.BCrypt.Verify(senha, usuario.Senha))
             {
                 TempData["ErroLogin"] = "E-mail ou senha inválidos.";
@@ -48,18 +49,18 @@ namespace Dev_PUC_SoSDog.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Cria as "Credenciais" (Claims) do usuário para o Cookie
+            // 3. Tudo certo! Cria as "Credenciais" (Claims) do usuário para o Cookie
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, usuario.ID_Usuario.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Nome),
-                new Claim(ClaimTypes.Email, usuario.Email)
-            };
+    {
+        new Claim(ClaimTypes.NameIdentifier, usuario.ID_Usuario.ToString()),
+        new Claim(ClaimTypes.Name, usuario.Nome),
+        new Claim(ClaimTypes.Email, usuario.Email)
+    };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
-            // Gera o cookie e "Loga" o usuário
+            // 4. Gera o cookie e "Loga" o usuário
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             return RedirectToAction("Index", "Home");

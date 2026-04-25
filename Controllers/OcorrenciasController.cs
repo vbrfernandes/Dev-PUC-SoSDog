@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SosDog.Models;
+using System.Security.Claims; // Necessário para pegar o ID do usuário
+using Microsoft.AspNetCore.Authorization; // Para garantir que só logados criem
 
 namespace Dev_PUC_SoSDog.Controllers
 {
@@ -54,18 +56,62 @@ namespace Dev_PUC_SoSDog.Controllers
         // POST: Ocorrencias/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        // POST: Ocorrencias/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID_Ocorrencia,Tipo,Status,Foto_Animal,Descricao,Latitude,Longitude,Data_Registro,ID_Usuario")] Ocorrencia ocorrencia)
+        [Authorize] // Garante que o usuário está logado
+        public async Task<IActionResult> Create([Bind("Tipo,Descricao,Latitude,Longitude,Sexo,Cor_Pelagem,Porte,Sociabilidade,Faixa_Etaria,Endereco,Recebeu_Agua,Recebeu_Comida")] Ocorrencia ocorrencia, IFormFile Foto_Animal)
         {
+            // 1. Ignorar a validação de campos que não vêm do formulário
+            ModelState.Remove("Usuario");
+            ModelState.Remove("Status");
+            ModelState.Remove("Foto_Animal");
             if (ModelState.IsValid)
             {
+                // 1. Vincular o usuário logado automaticamente
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null) return Unauthorized();
+                ocorrencia.ID_Usuario = int.Parse(userId);
+
+                // 2. Configurações automáticas de sistema
+                ocorrencia.Data_Registro = DateTime.UtcNow;
+
+                // Gera um código único para o animal (Ex: DOG-4829)
+                ocorrencia.Codigo_Cachorro = "DOG-" + new Random().Next(1000, 9999).ToString();
+
+                // Se a pessoa marcou que deu água ou comida, salva a data e hora atual
+                if (ocorrencia.Recebeu_Agua || ocorrencia.Recebeu_Comida)
+                {
+                    ocorrencia.Data_Ultima_Alimentacao = DateTime.UtcNow;
+                }
+
+                // 3. Processar Upload da Foto
+                if (Foto_Animal != null && Foto_Animal.Length > 0)
+                {
+                    string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ocorrencias");
+                    if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                    string fileName = Guid.NewGuid().ToString() + "_" + Foto_Animal.FileName;
+                    string filePath = Path.Combine(folder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await Foto_Animal.CopyToAsync(stream);
+                    }
+
+                    ocorrencia.Foto_Animal = "/images/ocorrencias/" + fileName;
+                }
+
                 _context.Add(ocorrencia);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                TempData["Sucesso"] = "Ocorrência registrada com sucesso!";
+                return RedirectToAction("Index", "Home");
             }
-            ViewData["ID_Usuario"] = new SelectList(_context.Usuarios, "ID_Usuario", "Email", ocorrencia.ID_Usuario);
-            return View(ocorrencia);
+            // SE DER ERRO: Em vez de return View(), voltamos para a página principal com erro
+            TempData["Erro"] = "Não foi possível registrar a ocorrência. Verifique se todos os campos obrigatórios foram preenchidos e se uma foto foi enviada.";
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Ocorrencias/Edit/5

@@ -12,17 +12,23 @@
             {
                 foreach (var item in Model)
                 {
-                    <div class="case-card" data-id="@item.ID_Ocorrencia">
-                        @* A classe 'dog-api-img' ativa o script dog-api-handler.js *@
-                        <img src="~/img/placeholder-dog.png" class="dog-api-img" alt="Foto do Animal">
+                    <div class="case-card"
+                         data-id="@item.ID_Ocorrencia"
+                         data-codigo="@item.Codigo_Cachorro"
+                         data-sexo="@item.Sexo"
+                         data-cor="@item.Cor_Pelagem"
+                         data-porte="@item.Porte"
+                         data-sociabilidade="@item.Sociabilidade"
+                         data-idade="@item.Faixa_Etaria"
+                         data-usuario="@item.ID_Usuario"
+                         data-alimentacao="@(item.Data_Ultima_Alimentacao.HasValue ? item.Data_Ultima_Alimentacao.Value.ToString("dd/MM/yyyy HH:mm") : "Sem registro")">
+                        
+                        <img src="@(!string.IsNullOrEmpty(item.Foto_Animal) ? item.Foto_Animal : "/img/placeholder-dog.png")" class="dog-api-img" alt="Foto do Animal">
                         
                         <div class="case-details">
                             <div class="case-header">
-                                <span>ID: #@item.ID_Ocorrencia</span>
-                                <span class="badge badge-green">@item.Status</span>
+                                <span>ID: @item.Codigo_Cachorro</span>
                             </div>
-                            
-                            @* Ajustado para usar as propriedades REAIS do seu Model Ocorrencia *@
                             <p><strong>Tipo:</strong> @item.Tipo</p>
                             <p class="text-truncate" title="@item.Descricao">
                                 <strong>Desc:</strong> @item.Descricao
@@ -44,10 +50,19 @@
             <button class="btn-orange" onclick="alert('Página de Urgência em desenvolvimento!')">
                 Urgente <i class="fa-solid fa-user-clock"></i>
             </button>
-            @* Link ajustado para a rota correta do Controller de Ocorrências *@
-            <a asp-controller="Ocorrencias" asp-action="Create" class="btn-orange text-decoration-none">
-                Reportar <i class="fa-solid fa-pen-to-square"></i>
-            </a>
+            
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <button type="button" class="btn-orange" data-bs-toggle="modal" data-bs-target="#modalOcorrencia">
+                    Reportar <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            }
+            else
+            {
+                <button type="button" class="btn-orange" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    Reportar <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+            }
         </div>
     </aside>
 
@@ -55,18 +70,60 @@
         <div id="map"></div>
     </section>
 
-    <aside class="dog-profile-sidebar">
+    <aside class="right-sidebar dog-profile-sidebar" id="painel-detalhes" style="display: none;">
+        <div class="profile-img-wrap">
+            <img id="sidebar-foto" src="/img/placeholder-dog.png" alt="Cachorro">
+        </div>
         <div class="profile-header">
-            <h2>perfil do cão</h2>
-            <i class="fa-solid fa-pen edit-icon"></i>
+            <h2 id="sidebar-titulo-id">ID do Cachorro</h2>
+            <i class="fa-regular fa-pen-to-square edit-icon"></i>
         </div>
         <hr class="profile-divider">
-        <div class="profile-img-wrap">
-            <img src="~/img/placeholder-dog.png" alt="Cão Selecionado">
+        <div class="profile-section">
+            <h3 class="section-title">Status</h3>
+            <div class="status-box">
+                <div class="status-col">
+                    <p><strong id="sidebar-sexo">Sexo</strong></p>
+                    <p><strong id="sidebar-cor">Cor/Pelagem</strong></p>
+                    <p><strong id="sidebar-porte">Porte</strong></p>
+                </div>
+                <div class="status-col">
+                    <p><strong id="sidebar-sociabilidade">Sociabilidade</strong></p>
+                    <p><strong id="sidebar-idade">Idade</strong></p>
+                </div>
+            </div>
         </div>
-        <div class="status-box">
-            <div class="status-col"><p>Status: Ativo</p></div>
-            <div class="status-col"><p>Local: Centro</p></div>
+        <div class="profile-section">
+            <div class="actions-labels">
+                <h3 class="section-title">Registro de Ações</h3>
+                <h3 class="section-title">Usuário:</h3>
+            </div>
+            <div class="actions-content">
+                <div class="action-buttons">
+                    <button class="btn-circle btn-agua">Água</button>
+                    <button class="btn-circle btn-comida">Comida</button>
+                </div>
+                <div class="user-log-box">
+                    <p id="sidebar-log-usuario">ID usuário: - <br>Data/hora<br>alimentação</p>
+                </div>
+            </div>
+        </div>
+        <hr class="profile-divider">
+        <div class="profile-section comments-section">
+            <h3 class="section-title">Comentários:</h3>
+            <div class="comment-input-row">
+                <img src="/img/placeholder-user.png" alt="Seu Avatar" class="avatar-sm">
+                <input type="text" class="comment-input" placeholder="Adicionar comentário...">
+                <button class="btn-send-comment" title="Enviar">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="comments-list">
+                <div class="comment-item">
+                    <img src="/img/placeholder-user.png" alt="Maria" class="avatar-sm">
+                    <p><strong>Maria:</strong> Amei o cuidado com nossos humaninhos</p>
+                </div>
+            </div>
         </div>
     </aside>
 </main>
@@ -75,4 +132,5 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="~/js/map-handler.js" asp-append-version="true"></script>
     <script src="~/js/dog-api-handler.js" asp-append-version="true"></script>
+    <script src="~/js/ocorrencias.js" asp-append-version="true"></script>
 }
