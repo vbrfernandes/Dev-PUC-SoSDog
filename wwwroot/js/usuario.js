@@ -42,3 +42,22 @@ if (tokenModalElement) {
         tokenModal.show();
     }
 }
+
+// Adicione isso ao seu arquivo wwwroot/js/usuario.js
+document.addEventListener("click", function (e) {
+    // Busca se o elemento clicado ou algum pai dele tem a classe 'auth-required'
+    const target = e.target.closest('.auth-required');
+
+    if (target) {
+        // 1. Para tudo o que o botão ia fazer (redirecionar, abrir outro modal, etc)
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 2. Abre o Modal de Login
+        const loginModalElement = document.getElementById('loginModal');
+        if (loginModalElement) {
+            const loginModal = new bootstrap.Modal(loginModalElement);
+            loginModal.show();
+        }
+    }
+}, true); // O 'true' garante que capturemos o clique antes de outros scripts (Capture phase)

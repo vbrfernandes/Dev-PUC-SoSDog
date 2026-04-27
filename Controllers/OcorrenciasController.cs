@@ -115,20 +115,23 @@ namespace Dev_PUC_SoSDog.Controllers
         }
 
         // GET: Ocorrencias/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var ocorrencia = await _context.Ocorrencias.FindAsync(id);
-            if (ocorrencia == null)
-            {
-                return NotFound();
-            }
-            ViewData["ID_Usuario"] = new SelectList(_context.Usuarios, "ID_Usuario", "Email", ocorrencia.ID_Usuario);
-            return View(ocorrencia);
+            if (ocorrencia == null) return NotFound();
+
+            // Segurança: Impede que um usuário edite a ocorrência de outro
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            if (ocorrencia.ID_Usuario != userId) return Forbid();
+
+            if (ocorrencia == null) return NotFound();
+
+
+
+            return PartialView("_EditarOcorrenciaModal", ocorrencia);
         }
 
         // POST: Ocorrencias/Edit/5
@@ -136,19 +139,48 @@ namespace Dev_PUC_SoSDog.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID_Ocorrencia,Tipo,Status,Foto_Animal,Descricao,Latitude,Longitude,Data_Registro,ID_Usuario")] Ocorrencia ocorrencia)
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, Ocorrencia ocorrencia, IFormFile NovaFoto)
         {
             if (id != ocorrencia.ID_Ocorrencia)
             {
                 return NotFound();
             }
 
+            // 1. Ignora a validação do campo Usuario e Status, igual fizemos no Create
+            ModelState.Remove("Usuario");
+            ModelState.Remove("Comentarios");
+            ModelState.Remove("FavoritadosPor");
+            ModelState.Remove("Foto_Animal");
+            ModelState.Remove("NovaFoto");
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // 2. Processar Upload de NOVA Foto (se o usuário selecionou uma)
+                    if (NovaFoto != null && NovaFoto.Length > 0)
+                    {
+                        string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ocorrencias");
+                        if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                        string fileName = Guid.NewGuid().ToString() + "_" + NovaFoto.FileName;
+                        string filePath = Path.Combine(folder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await NovaFoto.CopyToAsync(stream);
+                        }
+
+                        // Sobrescreve o caminho da foto antiga pela nova
+                        ocorrencia.Foto_Animal = "/images/ocorrencias/" + fileName;
+                    }
+                    // Se não enviou foto nova, o input hidden do modal mantém a Foto_Animal antiga!
+
                     _context.Update(ocorrencia);
                     await _context.SaveChangesAsync();
+
+                    TempData["Sucesso"] = "Ocorrência atualizada com sucesso!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -161,10 +193,14 @@ namespace Dev_PUC_SoSDog.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                // 3. Redireciona para a página principal (Home) onde está o mapa, e não para o Index antigo de Ocorrencias
+                return RedirectToAction("Index", "Home");
             }
-            ViewData["ID_Usuario"] = new SelectList(_context.Usuarios, "ID_Usuario", "Email", ocorrencia.ID_Usuario);
-            return View(ocorrencia);
+
+            // Se der erro de validação, volta para o mapa com um aviso
+            TempData["Erro"] = "Não foi possível salvar as alterações. Verifique os dados.";
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Ocorrencias/Delete/5

@@ -1,68 +1,54 @@
-﻿// wwwroot/js/ocorrencias.js
+﻿// Variável global para rastrear qual ocorrência está aberta no painel lateral
+let ocorrenciaSelecionadaId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
 
     // ==========================================
-    // LÓGICA DO MAPA - MODAL DE OCORRÊNCIAS
+    // 1. LÓGICA DO MAPA - MODAL DE OCORRÊNCIAS
     // ==========================================
     const modalOcorrenciaElement = document.getElementById('modalOcorrencia');
     let mapPicker;
     let marker;
 
     if (modalOcorrenciaElement) {
-        // Evento disparado assim que o modal termina de abrir
         modalOcorrenciaElement.addEventListener('shown.bs.modal', function () {
-
-            // Só inicializa o mapa na primeira vez que o modal abre
             if (!mapPicker) {
-                // Centralizado em Belo Horizonte (ajuste se necessário)
                 mapPicker = L.map('mapPicker').setView([-19.9167, -43.9333], 12);
-
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '© OpenStreetMap'
                 }).addTo(mapPicker);
 
-                // Evento de clique no mapa
                 mapPicker.on('click', function (e) {
                     const lat = e.latlng.lat;
                     const lng = e.latlng.lng;
-
-                    // Cria o marcador ou move ele se já existir
                     if (marker) {
                         marker.setLatLng(e.latlng);
                     } else {
                         marker = L.marker(e.latlng).addTo(mapPicker);
                     }
-
-                    // Preenche os inputs ocultos do formulário
                     document.getElementById('lat').value = lat;
                     document.getElementById('lng').value = lng;
                 });
             }
-
-            // Corrige o bug de renderização do Leaflet dentro de modais
-            setTimeout(() => {
-                mapPicker.invalidateSize();
-            }, 100);
+            setTimeout(() => { mapPicker.invalidateSize(); }, 100);
         });
     }
-});
 
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Pega todos os cards da esquerda
+    // ==========================================
+    // 2. LÓGICA DE DETALHES (SIDEBAR DIREITA)
+    // ==========================================
     const cards = document.querySelectorAll('.case-card');
-
-    // Pega o painel da direita que criamos
     const painelDetalhes = document.getElementById('painel-detalhes');
+    const btnEditar = document.getElementById('btn-editar-ocorrencia');
 
     cards.forEach(card => {
         card.addEventListener('click', function () {
-            // 1. Torna o painel da direita visível
-            painelDetalhes.style.display = 'flex'; // ou block, dependendo do seu CSS
+            painelDetalhes.style.display = 'flex';
 
-            // 2. Coleta os dados do card clicado usando o dataset
+            // ATUALIZAÇÃO: Salva o ID da ocorrência clicada
+            ocorrenciaSelecionadaId = this.dataset.id;
+
             const idCodigo = this.dataset.codigo || `ID #${this.dataset.id}`;
             const sexo = this.dataset.sexo || 'Não informado';
             const cor = this.dataset.cor || 'Não informada';
@@ -72,11 +58,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const idUsuario = this.dataset.usuario || 'Desconhecido';
             const dataAlimentacao = this.dataset.alimentacao || 'Sem registro';
 
-            // Pega a imagem exata que está aparecendo no card (pode ser da API de cães ou do banco)
             const imgElement = this.querySelector('img');
             const imgSrc = imgElement ? imgElement.src : '/img/placeholder-dog.png';
 
-            // 3. Injeta os dados na barra lateral direita
+            // Injeta os dados no HTML
             document.getElementById('sidebar-titulo-id').innerText = idCodigo;
             document.getElementById('sidebar-foto').src = imgSrc;
             document.getElementById('sidebar-sexo').innerText = sexo;
@@ -85,13 +70,55 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('sidebar-sociabilidade').innerText = sociabilidade;
             document.getElementById('sidebar-idade').innerText = idade;
 
-            // Formata o texto da caixa do usuário
             document.getElementById('sidebar-log-usuario').innerHTML =
                 `ID usuário: ${idUsuario}<br>Alimentado:<br>${dataAlimentacao}`;
 
-            // 4. (Opcional) Destacar o card que está selecionado
-            cards.forEach(c => c.classList.remove('border', 'border-success', 'bg-light')); // Remove destaque dos outros
-            this.classList.add('border', 'border-success', 'bg-light'); // Adiciona destaque no clicado
+            // Destaque visual do card
+            cards.forEach(c => c.classList.remove('border', 'border-success', 'bg-light'));
+            this.classList.add('border', 'border-success', 'bg-light');
         });
     });
+
+    // ==========================================
+    // 3. LÓGICA DO BOTÃO EDITAR
+    // ==========================================
+    if (btnEditar) {
+        btnEditar.addEventListener('click', function () {
+            if (this.classList.contains('auth-required')) return;
+
+            if (ocorrenciaSelecionadaId) {
+
+                // 1. Em vez de sair da página, fazemos uma requisição "escondida" (AJAX)
+                fetch(`/Ocorrencias/Edit/${ocorrenciaSelecionadaId}`)
+                    .then(response => {
+                        if (response.status === 401) {
+                            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                            loginModal.show();
+                            throw new Error("Login necessário.");
+                        }
+                        if (!response.ok) {
+                            throw new Error("Erro ao carregar os dados. Você tem permissão?");
+                        }
+                        // Pega o HTML cru que o Controller devolveu (a PartialView)
+                        return response.text();
+                    })
+                    .then(html => {
+                        // 2. Injeta esse HTML dentro daquela div vazia no seu Index.cshtml
+                        document.getElementById('editModalContainer').innerHTML = html;
+
+                        // 3. Avisa ao Bootstrap que isso é um modal e manda abrir!
+                        const modalEditElement = document.getElementById('modalEditarOcorrencia');
+                        const modalEdit = new bootstrap.Modal(modalEditElement);
+                        modalEdit.show();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert("Não foi possível carregar a edição.");
+                    });
+
+            } else {
+                alert("Por favor, selecione uma ocorrência primeiro.");
+            }
+        });
+    }
 });

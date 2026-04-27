@@ -510,10 +510,36 @@ main[role="main"] {
 .status-box {
     background-color: #e4e9e7;
     border-radius: var(--border-radius-md);
-    padding: 10px 15px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column; /* Mudança para lista para melhor leitura em sidebars estreitas */
+    gap: 8px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between; /* Alinha label na esquerda e dado na direita */
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 4px;
+}
+
+    .status-item:last-child {
+        border-bottom: none;
+    }
+
+.status-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-data {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .status-col p {
@@ -538,6 +564,9 @@ main[role="main"] {
 .action-buttons {
     display: flex;
     gap: 10px;
+}
+.dog-profile-sidebar {
+    scrollbar-gutter: stable; /* Evita que o layout pule quando o scroll aparece */
 }
 
 /* ==================== BOTÕES CIRCULARES ==================== */

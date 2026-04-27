@@ -40,13 +40,13 @@ namespace SosDog.Models
         // ==========================================
         // CAMPOS ORIGINAIS
         // ==========================================
-        [Required]
-        public string Tipo { get; set; }
+        [Required(ErrorMessage = "O tipo é obrigatório")]
+        public string? Tipo { get; set; }
 
         public string? Foto_Animal { get; set; }
 
-        [Required]
-        public string Descricao { get; set; }
+        [Required(ErrorMessage = "A descrição é obrigatória")]
+        public string? Descricao { get; set; }
 
         // Se a localização também for opcional (ex: a pessoa prefere digitar só o endereço), usamos float?
         // Mas se o mapa for o coração do sistema, você pode deixar como 'public float Latitude' e tratar no JS.
@@ -61,7 +61,7 @@ namespace SosDog.Models
         public int ID_Usuario { get; set; }
 
         [ForeignKey("ID_Usuario")]
-        public virtual Usuario Usuario { get; set; }
+        public virtual Usuario? Usuario { get; set; }
 
         public virtual ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>();
         public virtual ICollection<Favorito> FavoritadosPor { get; set; } = new List<Favorito>();

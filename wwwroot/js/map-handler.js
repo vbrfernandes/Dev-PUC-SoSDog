@@ -38,6 +38,10 @@
         const cards = document.querySelectorAll('.case-card');
 
         cards.forEach(card => {
+
+            const latStr = card.dataset.lat || "";
+            const lngStr = card.dataset.lng || "";
+
             const lat = parseFloat(card.dataset.lat.replace(',', '.'));
             const lng = parseFloat(card.dataset.lng.replace(',', '.'));
             const id = card.dataset.id;
