@@ -81,10 +81,7 @@ namespace Dev_PUC_SoSDog.Controllers
                 ocorrencia.Codigo_Cachorro = "DOG-" + new Random().Next(1000, 9999).ToString();
 
                 // Se a pessoa marcou que deu água ou comida, salva a data e hora atual
-                if (ocorrencia.Recebeu_Agua || ocorrencia.Recebeu_Comida)
-                {
-                    ocorrencia.Data_Ultima_Alimentacao = DateTime.UtcNow;
-                }
+
 
                 // 3. Processar Upload da Foto
                 if (Foto_Animal != null && Foto_Animal.Length > 0)
@@ -201,6 +198,52 @@ namespace Dev_PUC_SoSDog.Controllers
             // Se der erro de validação, volta para o mapa com um aviso
             TempData["Erro"] = "Não foi possível salvar as alterações. Verifique os dados.";
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RegistrarAcao(int id, string tipoAcao)
+        {
+            var ocorrencia = await _context.Ocorrencias.FindAsync(id);
+            if (ocorrencia == null) return Json(new { success = false, message = "Ocorrência não encontrada" });
+
+            // Pega o ID do usuário logado de forma segura
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return Json(new { success = false, message = "Usuário não identificado" });
+
+            var usuario = await _context.Usuarios.FindAsync(int.Parse(userIdString));
+            if (usuario == null) return Json(new { success = false, message = "Usuário não encontrado no banco" });
+
+            string dataFormatada = "";
+
+            // Lógica para atualizar os campos específicos
+            if (tipoAcao == "agua")
+            {
+                ocorrencia.Recebeu_Agua = true;
+                ocorrencia.Data_Ultima_Agua = DateTime.Now;
+                dataFormatada = ocorrencia.Data_Ultima_Agua.Value.ToString("dd/MM/yyyy HH:mm");
+            }
+            else if (tipoAcao == "comida")
+            {
+                ocorrencia.Recebeu_Comida = true;
+                ocorrencia.Data_Ultima_Comida = DateTime.Now; // Certifique-se que o nome no Model é este
+                dataFormatada = ocorrencia.Data_Ultima_Comida.Value.ToString("dd/MM/yyyy HH:mm");
+            }
+
+            // Atualiza quem foi o último cuidador
+            ocorrencia.Nome_Usuario_Ultima_Acao = usuario.Nome;
+
+            _context.Update(ocorrencia);
+            await _context.SaveChangesAsync();
+
+            // Retorno JSON que o seu arquivo ocorrencias.js espera
+            return Json(new
+            {
+                success = true,
+                dataStr = dataFormatada,
+                nomeUsuario = usuario.Nome,
+                tipo = tipoAcao // Retorna 'agua' ou 'comida'
+            });
         }
 
         // GET: Ocorrencias/Delete/5

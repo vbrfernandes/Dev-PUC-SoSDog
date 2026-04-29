@@ -23,8 +23,10 @@
                          data-sociabilidade="@item.Sociabilidade"
                          data-idade="@item.Faixa_Etaria"
                          data-usuario="@item.ID_Usuario"
-                         data-alimentacao="@(item.Data_Ultima_Alimentacao.HasValue ? item.Data_Ultima_Alimentacao.Value.ToString("dd/MM/yyyy HH:mm") : "Sem registro")">
-                    
+                         data-agua="@(item.Data_Ultima_Agua.HasValue ? item.Data_Ultima_Agua.Value.ToString("dd/MM HH:mm") : "--:--")"
+                         data-comida="@(item.Data_Ultima_Comida.HasValue ? item.Data_Ultima_Comida.Value.ToString("dd/MM HH:mm") : "--:--")"
+                         data-ultimo-user="@(string.IsNullOrEmpty(item.Nome_Usuario_Ultima_Acao) ? "Nenhum registro" : item.Nome_Usuario_Ultima_Acao)">
+
                         <img src="@item.Foto_Animal" class="dog-api-img" alt="Foto do Animal">
 
                         <div class="case-details">
@@ -112,21 +114,42 @@
                 </div>
             </div>
         </div>
-        <div class="profile-section">
-            <div class="actions-labels">
-                <h3 class="section-title">Registro de Ações</h3>
-                <h3 class="section-title">Usuário:</h3>
-            </div>
-            <div class="actions-content">
-                <div class="action-buttons">
-                    <button class="btn-circle btn-agua">Água</button>
-                    <button class="btn-circle btn-comida">Comida</button>
+
+        <div class="profile-section action-card-container">
+            <h3 class="section-title">Registro de Ações</h3>
+
+            <div class="action-layout">
+                <div class="action-buttons-modern">
+                    <button class="btn-modern btn-agua-modern" onclick="executarAcao('agua', this)">
+                        <i class="fa-solid fa-droplet"></i>
+                        <span>Água</span>
+                    </button>
+                    <button class="btn-modern btn-comida-modern" onclick="executarAcao('comida', this)">
+                        <i class="fa-solid fa-bowl-food"></i>
+                        <span>Comida</span>
+                    </button>
                 </div>
-                <div class="user-log-box">
-                    <p id="sidebar-log-usuario">ID usuário: - <br>Data/hora<br>alimentação</p>
+
+                <div class="user-status-card">
+                    <div class="user-card-header">
+                        <div class="user-card-info">
+                            <span class="user-label">Último cuidador: <strong id="sidebar-user-id" class="text-primary">Nenhum</strong></span>
+                        </div>
+                    </div>
+                    <div class="user-card-body">
+                        <div class="status-row">
+                            <i class="fa-solid fa-droplet icon-agua"></i>
+                            <span>Última Água: <strong id="sidebar-last-agua">--:--</strong></span>
+                        </div>
+                        <div class="status-row">
+                            <i class="fa-solid fa-bowl-food icon-comida"></i>
+                            <span>Última Comida: <strong id="sidebar-last-comida">--:--</strong></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <hr class="profile-divider">
         <div class="profile-section comments-section">
             <h3 class="section-title">Comentários:</h3>

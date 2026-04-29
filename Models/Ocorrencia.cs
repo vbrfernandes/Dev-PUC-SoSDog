@@ -35,7 +35,10 @@ namespace SosDog.Models
 
         public bool Recebeu_Comida { get; set; } = false;
 
-        public DateTime? Data_Ultima_Alimentacao { get; set; }
+        public DateTime? Data_Ultima_Agua { get; set; }
+        public DateTime? Data_Ultima_Comida { get; set; }
+
+        public string? Nome_Usuario_Ultima_Acao { get; set; }
 
         // ==========================================
         // CAMPOS ORIGINAIS

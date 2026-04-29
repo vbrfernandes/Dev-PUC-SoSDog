@@ -570,41 +570,150 @@ main[role="main"] {
 }
 
 /* ==================== BOTÕES CIRCULARES ==================== */
-.btn-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    color: var(--white);
-    font-weight: bold;
-    font-size: 13px;
-    cursor: pointer;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
-    transition: 0.2s;
+.action-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 15px;
 }
 
-    .btn-circle:hover {
-        transform: scale(1.05);
+/* Botões Modernos */
+.action-buttons-modern {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+}
+
+.btn-modern {
+    border: none;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .btn-modern i {
+        font-size: 24px;
+        margin-bottom: 4px;
     }
 
-.btn-agua {
-    background-color: #7ab583;
+    .btn-modern span {
+        font-size: 12px;
+    }
+
+.btn-agua-modern {
+    background-color: var(--light-green);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
 }
 
-.btn-comida {
+.btn-comida-modern {
     background-color: var(--primary-orange);
+    box-shadow: 0 0 15px rgba(243, 156, 18, 0.4);
 }
 
+.btn-modern:hover {
+    transform: scale(1.05);
+}
+
+/* Atualização das cores para bater com seu :root */
+.btn-agua-modern {
+    background-color: #7ab583; /* Cor aproximada da sua --light-green */
+    box-shadow: 0 4px 15px rgba(122, 181, 131, 0.4);
+}
+
+.btn-comida-modern {
+    background-color: var(--primary-orange);
+    box-shadow: 0 4px 15px rgba(224, 122, 95, 0.4);
+}
+
+/* Ajuste no card para não ficar largo demais na sua sidebar de 320px */
+.user-status-card {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05); /* Suave borda para definição */
+}
+
+.animal-name {
+    font-weight: bold;
+    color: var(--primary-green);
+    font-size: 13px; /* Ajustado para caber na sidebar */
+}
+
+/* Feedback visual de sucesso: ÁGUA */
+.btn-animacao-agua {
+    background-color: #3498db !important; /* Azul água */
+    color: white !important;
+    border-color: #2980b9 !important;
+    box-shadow: 0 0 12px rgba(52, 152, 219, 0.7);
+    transition: all 0.3s ease-in-out;
+    transform: scale(1.05); /* Dá uma leve "crescida" no botão */
+}
+
+/* Feedback visual de sucesso: COMIDA */
+.btn-animacao-comida {
+    background-color: #e67e22 !important; /* Laranja ração */
+    color: white !important;
+    border-color: #d35400 !important;
+    box-shadow: 0 0 12px rgba(230, 126, 34, 0.7);
+    transition: all 0.3s ease-in-out;
+    transform: scale(1.05);
+}
 /* ==================== LOG DE USUÁRIO ==================== */
-.user-log-box {
-    background-color: #c1ccc8;
-    border-radius: var(--border-radius-md);
-    padding: 10px;
-    font-size: 10px;
-    color: var(--text-dark);
-    flex-grow: 1;
+.user-card-header {
     display: flex;
     align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.user-card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.animal-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+    font-size: 16px;
+    color: #444;
+}
+
+.icon-agua {
+    color: #2ecc71;
+}
+
+.icon-comida {
+    color: #f39c12;
+}
+
+.avatar-md {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #e0e0e0;
 }
 
 /* ==================== SEÇÃO DE COMENTÁRIOS ==================== */
@@ -721,3 +830,78 @@ footer.footer {
             color: var(--light-green);
             text-decoration: underline;
         }
+
+        /*""""""""""""""""""""""""""""""""""""""""""""""*/
+/* ==================== CARD DE REGISTRO DE AÇÕES (SIDEBAR DIREITA) ==================== */
+.user-status-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius-md);
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.user-card-header {
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+}
+
+.user-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .user-label strong {
+        color: var(--primary-green); /* Usando o verde principal do seu tema */
+        font-size: 14px;
+    }
+
+.user-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Coloca a água e a comida lado a lado */
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-main); /* Fundo cinza clarinho */
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+
+    .status-row span {
+        display: flex;
+        flex-direction: column;
+        font-size: 11px;
+        color: var(--text-muted);
+        line-height: 1.3;
+    }
+
+    .status-row strong {
+        font-size: 13px;
+        color: var(--text-dark);
+    }
+
+/* Cores dos Ícones */
+.icon-agua {
+    color: #3498db; /* Azul para a gota de água */
+    font-size: 18px;
+}
+
+.icon-comida {
+    color: #e67e22; /* Laranja para a tigela de comida */
+    font-size: 18px;
+}
+#sidebar-last-agua, #sidebar-last-comida {
+    font-variant-numeric: tabular-nums; /* Mantém os números alinhados */
+    white-space: nowrap; /* Impede que a data pule de linha */
+}
