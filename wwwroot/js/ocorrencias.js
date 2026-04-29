@@ -115,6 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
             // Salva o ID da ocorrência clicada
             ocorrenciaSelecionadaId = this.dataset.id;
 
+            carregarComentarios(ocorrenciaSelecionadaId);
+
             // 1. Pega os dados públicos que injetamos no HTML via Razor
             const horaAgua = this.getAttribute('data-agua') || "--:--";
             const horaComida = this.getAttribute('data-comida') || "--:--";
@@ -169,6 +171,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Evento para o botão de enviar comentário (ícone de avião)
+    const btnEnviar = document.getElementById('btn-enviar-comentario');
+    if (btnEnviar) {
+        btnEnviar.addEventListener('click', enviarComentario);
+    }
+
+    // Permitir enviar com "Enter" no teclado dentro do campo de texto
+    const inputComentario = document.getElementById('txt-comentario');
+    if (inputComentario) {
+        inputComentario.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                enviarComentario();
+            }
+        });
+    }
+
     // ==========================================
     // 3. LÓGICA DO BOTÃO EDITAR
     // ==========================================
@@ -210,6 +228,80 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Por favor, selecione uma ocorrência primeiro.");
             }
         });
+    }
+
+    // --- FUNÇÕES DE COMENTÁRIOS ---
+
+    function carregarComentarios(ocorrenciaId) {
+        const lista = document.getElementById('lista-comentarios');
+        lista.innerHTML = '<p class="text-center mt-3"><i class="fa-solid fa-spinner fa-spin"></i> Carregando...</p>';
+
+        fetch(`/Comentarios/ListarPorOcorrencia?ocorrenciaId=${ocorrenciaId}`)
+            .then(response => response.json())
+            .then(comentarios => {
+                lista.innerHTML = ''; // Limpa o carregando
+
+                if (comentarios.length === 0) {
+                    lista.innerHTML = '<p class="text-muted small text-center mt-3">Nenhum comentário ainda. Seja o primeiro!</p>';
+                    return;
+                }
+
+                comentarios.forEach(c => {
+                    lista.innerHTML += `
+                    <div class="comment-item">
+                        <img src="${c.usuarioFoto || '/img/placeholder-user.png'}" alt="${c.usuarioNome}" class="avatar-sm">
+                        <div class="comment-content">
+                            <p><strong>${c.usuarioNome}:</strong> ${c.texto}</p>
+                            <small class="text-muted" style="font-size: 10px;">${c.data}</small>
+                        </div>
+                    </div>`;
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar comentários:', error);
+                lista.innerHTML = '<p class="text-danger small text-center mt-3">Erro ao carregar comentários.</p>';
+            });
+    }
+
+    function enviarComentario() {
+        const input = document.getElementById('txt-comentario');
+        const texto = input.value.trim();
+
+        if (!ocorrenciaSelecionadaId) {
+            alert("Selecione uma ocorrência primeiro!");
+            return;
+        }
+
+        if (!texto) return;
+
+        const btn = document.getElementById('btn-enviar-comentario');
+        btn.disabled = true;
+
+        fetch(`/Comentarios/AdicionarComentario`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `ocorrenciaId=${ocorrenciaSelecionadaId}&texto=${encodeURIComponent(texto)}`
+        })
+            .then(response => {
+                if (response.status === 401) {
+                    alert("Você precisa estar logado para comentar.");
+                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    loginModal.show();
+                    throw new Error("Não autorizado");
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    input.value = ''; // Limpa o campo
+                    carregarComentarios(ocorrenciaSelecionadaId); // Recarrega a lista para mostrar o novo
+                }
+            })
+            .finally(() => {
+                btn.disabled = false;
+            });
     }
 
 });

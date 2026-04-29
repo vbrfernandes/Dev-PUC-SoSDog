@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SosDog.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dev_PUC_SoSDog.Controllers
 {
@@ -159,6 +161,60 @@ namespace Dev_PUC_SoSDog.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ListarPorOcorrencia(int ocorrenciaId)
+        {
+            var comentarios = await _context.Comentarios
+                .Include(c => c.Usuario)
+                .Where(c => c.ID_Ocorrencia == ocorrenciaId)
+                .OrderByDescending(c => c.Data_hora)
+                .Select(c => new {
+                    usuarioNome = c.Usuario.Nome,
+                    usuarioFoto = c.Usuario.Foto_Perfil,
+                    texto = c.Texto,
+                    data = c.Data_hora.ToString("dd/MM HH:mm")
+                })
+                .ToListAsync();
+
+            return Json(comentarios);
+        }
+
+        // POST: Comentarios/AdicionarComentario
+        [HttpPost]
+        [Authorize] // Só usuários logados podem comentar
+        public async Task<IActionResult> AdicionarComentario(int ocorrenciaId, string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto))
+                return BadRequest(new { success = false, message = "O comentário não pode estar vazio." });
+
+            // Pega o ID do usuário logado no sistema de Cookies
+            var usuarioIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(usuarioIdStr)) return Unauthorized();
+
+            var novoComentario = new Comentario
+            {
+                ID_Ocorrencia = ocorrenciaId,
+                ID_Usuario = int.Parse(usuarioIdStr),
+                Texto = texto,
+                Data_hora = DateTime.Now
+            };
+
+            _context.Comentarios.Add(novoComentario);
+            await _context.SaveChangesAsync();
+
+            // Busca os dados do autor para retornar ao JS
+            var usuario = await _context.Usuarios.FindAsync(novoComentario.ID_Usuario);
+
+            return Json(new
+            {
+                success = true,
+                usuarioNome = usuario.Nome,
+                usuarioFoto = usuario.Foto_Perfil,
+                texto = novoComentario.Texto,
+                data = novoComentario.Data_hora.ToString("dd/MM HH:mm")
+            });
         }
 
         private bool ComentarioExists(int id)

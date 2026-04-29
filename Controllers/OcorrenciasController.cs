@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using SosDog.Models;
 using System.Security.Claims; // Necessário para pegar o ID do usuário
 using Microsoft.AspNetCore.Authorization; // Para garantir que só logados criem
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace Dev_PUC_SoSDog.Controllers
 {
@@ -73,6 +75,35 @@ namespace Dev_PUC_SoSDog.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId == null) return Unauthorized();
                 ocorrencia.ID_Usuario = int.Parse(userId);
+
+                // --- INÍCIO DA LÓGICA DE GEOCODIFICAÇÃO ---
+                if (!string.IsNullOrEmpty(ocorrencia.Endereco))
+                {
+                    try
+                    {
+                        using (var client = new System.Net.Http.HttpClient())
+                        {
+                            // A API Nominatim exige um User-Agent para não bloquear a requisição
+                            client.DefaultRequestHeaders.Add("User-Agent", "SoSDogApp_PUC_Minas");
+
+                            var url = $"https://nominatim.openstreetmap.org/search?format=json&q={Uri.EscapeDataString(ocorrencia.Endereco)}";
+                            var response = await client.GetStringAsync(url);
+                            var data = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(response);
+
+                            if (data != null && data.Count > 0)
+                            {
+                                // Usamos (float) para coincidir com o tipo do seu Model
+                                ocorrencia.Latitude = (float)data[0].lat;
+                                ocorrencia.Longitude = (float)data[0].lon;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Opcional: Logar o erro se a API falhar, mas permitir que o código continue
+                        Console.WriteLine("Erro ao buscar coordenadas: " + ex.Message);
+                    }
+                }
 
                 // 2. Configurações automáticas de sistema
                 ocorrencia.Data_Registro = DateTime.UtcNow;

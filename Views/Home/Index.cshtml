@@ -26,6 +26,7 @@
                          data-agua="@(item.Data_Ultima_Agua.HasValue ? item.Data_Ultima_Agua.Value.ToString("dd/MM HH:mm") : "--:--")"
                          data-comida="@(item.Data_Ultima_Comida.HasValue ? item.Data_Ultima_Comida.Value.ToString("dd/MM HH:mm") : "--:--")"
                          data-ultimo-user="@(string.IsNullOrEmpty(item.Nome_Usuario_Ultima_Acao) ? "Nenhum registro" : item.Nome_Usuario_Ultima_Acao)">
+                   
 
                         <img src="@item.Foto_Animal" class="dog-api-img" alt="Foto do Animal">
 
@@ -39,6 +40,7 @@
                                 <strong>Status:</strong> @item.Sociabilidade - @item.Porte - @item.Sexo
                             </p>
                         </div>
+
                     </div>
                 }
             }
@@ -73,7 +75,11 @@
     </aside>
 
     <section class="main-map-area">
-        <div id="map"></div>
+        <div id="map">
+            <button onclick="window.sosDogMap.ativarModoCriacao()" class="btn-reportar-flutuante shadow-lg">
+                <i class="fa-solid fa-location-dot fa-bounce"></i> Reportar Animal
+            </button>
+        </div>
     </section>
 
     <aside class="right-sidebar dog-profile-sidebar" id="painel-detalhes" style="display: none;">
@@ -153,18 +159,23 @@
         <hr class="profile-divider">
         <div class="profile-section comments-section">
             <h3 class="section-title">Comentários:</h3>
+    
             <div class="comment-input-row">
+                @* Se você tiver a foto do usuário na Claim/Session, pode colocar aqui *@
                 <img src="/img/placeholder-user.png" alt="Seu Avatar" class="avatar-sm">
-                <input type="text" class="comment-input" placeholder="Adicionar comentário...">
-                <button class="btn-send-comment" title="Enviar">
+        
+                @* Adicionamos o ID txt-comentario *@
+                <input type="text" id="txt-comentario" class="comment-input" placeholder="Adicionar comentário...">
+        
+                @* Adicionamos o ID btn-enviar-comentario *@
+                <button id="btn-enviar-comentario" class="btn-send-comment" title="Enviar">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
-            <div class="comments-list">
-                <div class="comment-item">
-                    <img src="/img/placeholder-user.png" alt="Maria" class="avatar-sm">
-                    <p><strong>Maria:</strong> Amei o cuidado com nossos humaninhos</p>
-                </div>
+
+            @* Adicionamos o ID lista-comentarios para o JS poder injetar os dados *@
+            <div id="lista-comentarios" class="comments-list">
+                <p class="text-muted small text-center mt-3">Selecione uma ocorrência para ver os comentários.</p>
             </div>
         </div>
     </aside>
