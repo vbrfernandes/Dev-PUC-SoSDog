@@ -296,19 +296,49 @@ namespace Dev_PUC_SoSDog.Controllers
             return View(ocorrencia);
         }
 
-        // POST: Ocorrencias/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize] // Garante que o usuário precise estar logado
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ocorrencia = await _context.Ocorrencias.FindAsync(id);
-            if (ocorrencia != null)
+            // 1. Em vez de FindAsync, precisamos usar Include para trazer as listas dependentes (Comentarios e Favoritos)
+            var ocorrencia = await _context.Ocorrencias
+                .Include(o => o.Comentarios)
+                .Include(o => o.FavoritadosPor)
+                .FirstOrDefaultAsync(m => m.ID_Ocorrencia == id);
+
+            if (ocorrencia == null)
             {
-                _context.Ocorrencias.Remove(ocorrencia);
+                return NotFound();
             }
 
+            // REGRA DE SEGURANÇA: Obtém o ID do usuário logado
+            var usuarioLogadoId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Verifica se o ID do autor da ocorrência é o mesmo do usuário logado
+            if (ocorrencia.ID_Usuario.ToString() != usuarioLogadoId)
+            {
+                return Forbid();
+            }
+
+            // ========================================================
+            // 2. EXCLUIR DEPENDÊNCIAS PRIMEIRO PARA EVITAR O ERRO
+            // ========================================================
+            if (ocorrencia.Comentarios != null && ocorrencia.Comentarios.Any())
+            {
+                _context.Comentarios.RemoveRange(ocorrencia.Comentarios);
+            }
+
+            if (ocorrencia.FavoritadosPor != null && ocorrencia.FavoritadosPor.Any())
+            {
+                _context.Favoritos.RemoveRange(ocorrencia.FavoritadosPor);
+            }
+
+            // 3. Agora que as tabelas filhas estão limpas, exclui a ocorrência
+            _context.Ocorrencias.Remove(ocorrencia);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Index", "Home");
         }
 
         private bool OcorrenciaExists(int id)

@@ -107,13 +107,18 @@
             </div>
         `).openPopup();
 
-        this.atualizarCamposCoordenadas(center.lat, center.lng);
 
         this.creationMarker.on('dragend', (e) => {
             const position = e.target.getLatLng();
             this.atualizarCamposCoordenadas(position.lat, position.lng);
             this.creationMarker.openPopup();
         });
+
+        this.atualizarCamposCoordenadas(center.lat, center.lng);
+
+        setTimeout(() => {
+            this.creationMarker.openPopup();
+        }, 100);
     }
 
     // No seu map-handler.js, dentro da classe SosDogMap:
@@ -197,6 +202,24 @@ function focusCard(id) {
         document.getElementById('sidebar-user-id').innerText = card.dataset.ultimoUser;
         document.getElementById('sidebar-last-agua').innerText = card.dataset.agua;
         document.getElementById('sidebar-last-comida').innerText = card.dataset.comida;
+
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        const formDeletar = document.getElementById('form-deletar-sidebar');
+
+        // Confirma se os elementos existem antes de tentar manipulá-los
+        if (dashboardContainer && formDeletar) {
+            const currentUserId = dashboardContainer.dataset.userId;
+            const donoOcorrenciaId = card.dataset.usuario;
+
+            // Se o usuário logado for o dono da ocorrência (e estiver logado)
+            if (currentUserId && currentUserId === donoOcorrenciaId) {
+                formDeletar.style.display = 'block';
+                // Atualiza a URL do formulário com o ID da ocorrência clicada
+                formDeletar.action = `/Ocorrencias/Delete/${id}`;
+            } else {
+                formDeletar.style.display = 'none';
+            }
+        }
 
         // 4. Atualizar a variável global para o sistema de comentários (ocorrencias.js)
         if (typeof ocorrenciaSelecionadaId !== 'undefined') {

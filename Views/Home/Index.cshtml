@@ -1,11 +1,13 @@
-﻿@model IEnumerable<SosDog.Models.Ocorrencia>
+﻿@using System.Security.Claims
+@model IEnumerable<SosDog.Models.Ocorrencia>
 @{
     ViewData["Title"] = "Dashboard de Ocorrências";
+    var usuarioLogadoId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<main class="dashboard-container">
+<main class="dashboard-container" data-user-id="@usuarioLogadoId" >
     <aside class="left-sidebar">
         <div class="cases-list">
             @if (Model != null && Model.Any())
@@ -39,6 +41,7 @@
                             <p class="text-truncate" title="@item.Descricao">
                                 <strong>Status:</strong> @item.Sociabilidade - @item.Porte - @item.Sexo
                             </p>
+
                         </div>
 
                     </div>
@@ -76,7 +79,8 @@
 
     <section class="main-map-area">
         <div id="map">
-            <button onclick="window.sosDogMap.ativarModoCriacao()" class="btn-reportar-flutuante shadow-lg">
+            <button onclick="window.sosDogMap.ativarModoCriacao()"
+                    class="btn-reportar-flutuante shadow-lg @(User.Identity.IsAuthenticated ? "" : "auth-required")">
                 <i class="fa-solid fa-location-dot fa-bounce"></i> Reportar Animal
             </button>
         </div>
@@ -86,13 +90,19 @@
         <div class="profile-img-wrap">
             <img id="sidebar-foto" src="/img/placeholder-dog.png" alt="Cachorro">
         </div>
-        <div class="profile-header">
-            <h2 id="sidebar-titulo-id">ID do Cachorro</h2>
+        <div class="profile-header" style="display: flex; align-items: center; gap: 15px;">
+            <h2 id="sidebar-titulo-id" style="margin: 0;">ID do Cachorro</h2>
+            
             <i class="fa-regular fa-pen-to-square edit-icon @(User.Identity.IsAuthenticated ? "" : "auth-required")"
                id="btn-editar-ocorrencia"
-               style="cursor: pointer;"
+               style="cursor: pointer; font-size: 1.2rem;"
                title="Editar Ocorrência"></i>
-
+            <form id="form-deletar-sidebar" method="post" onsubmit="return confirm('Tem certeza que deseja remover este alerta permanentemente?');" style="display: none; margin: 0;">
+                @Html.AntiForgeryToken()
+                <button type="submit" style="background: none; border: none; padding: 0;" title="Excluir Ocorrência">
+                    <i class="fa-solid fa-trash text-danger" style="cursor: pointer; font-size: 1.2rem;"></i>
+                </button>
+            </form>
         </div>
         <hr class="profile-divider">
         <div class="profile-section">

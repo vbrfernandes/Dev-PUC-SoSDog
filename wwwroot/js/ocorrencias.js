@@ -165,6 +165,28 @@ document.addEventListener("DOMContentLoaded", function () {
             const sidebarIdade = document.getElementById('sidebar-idade');
             if (sidebarIdade) sidebarIdade.innerText = idade;
 
+
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            const formDeletar = document.getElementById('form-deletar-sidebar');
+
+            if (dashboardContainer && formDeletar) {
+                // Pega o ID do usuário logado (está na div principal)
+                const currentUserId = dashboardContainer.dataset.userId;
+
+                // Pega o ID de quem criou essa ocorrência (está no card clicado)
+                const donoOcorrenciaId = this.dataset.usuario;
+
+                // Se o usuário estiver logado e for o dono, mostra a lixeirinha
+                if (currentUserId && currentUserId === donoOcorrenciaId) {
+                    formDeletar.style.display = 'block';
+                    // Atualiza a action do formulário para deletar a ocorrência certa
+                    formDeletar.action = `/Ocorrencias/Delete/${ocorrenciaSelecionadaId}`;
+                } else {
+                    // Se não for o dono, esconde a lixeirinha
+                    formDeletar.style.display = 'none';
+                }
+            }
+
             // Destaque visual do card
             cards.forEach(c => c.classList.remove('border', 'border-success', 'bg-light'));
             this.classList.add('border', 'border-success', 'bg-light');
